@@ -14,7 +14,7 @@ describe('har server core', function () {
         listeningPort: 8080,
         setHostFileEntries: false,
         removeHostFileEntries: false,
-        harFileName: './tests/fixtures/test.har'
+        harFileName: './test/fixtures/test.har'
     };
 
     it('should validate good HAR file', function (done) {

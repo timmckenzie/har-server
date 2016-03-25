@@ -19,7 +19,7 @@ npm install -g har-server
 
 ###Serving a resource
 A request for a resource is considered to be a match of a HAR file entry if and only if:
-* the HAR domain matches the requests host header
+* the HAR host matches the requests host header
 * the HAR path, query string, and fragment exactly matches the request path, query string, and fragment
 * the HAR HTTP method matches the request HTTP method
 If the HAR file contains multiple matches for a specific request the first match is used in the response.
