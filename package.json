@@ -7,6 +7,10 @@
     "test": "mocha",
     "docs": "node node_modules/jsdoc-to-markdown/bin/cli.js lib/harServer.js > API.md"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/timmckenzie/har-server.git"
+  },
   "author": "Tim Mckenzie",
   "license": "MIT",
   "dependencies": {
