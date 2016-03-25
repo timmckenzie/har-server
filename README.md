@@ -9,7 +9,7 @@ npm install -g har-server
 
 ###How does it work?
 1. Capture a HAR file with full response bodies.  Lets use http://cnn.com, and save HAR as cnn.com.har
-2. Run har-server server `sudo har-server cnn.com.har -p 80 -h -r`
+2. Run har-server `sudo har-server cnn.com.har -p 80 -h -r`
  * -p will set the listening port to 80.  You need to run as root to do this
  * -h add all domains in HAR to host file, and point them to 127.0.0.1
  * -r remove all domains which were added to host file, when SIGINT is caught (ctrl+c).
