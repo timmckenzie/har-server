@@ -7,6 +7,9 @@
     "test": "mocha",
     "docs": "node node_modules/jsdoc-to-markdown/bin/cli.js lib/harServer.js > API.md"
   },
+  "bin": {
+    "har-server": "bin/cli.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/timmckenzie/har-server.git"
