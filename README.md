@@ -10,11 +10,11 @@ npm install -g har-server
 ###How does it work?
 1. Capture a HAR file with full response bodies.  Lets use http://cnn.com, and save HAR as cnn.com.har
 2. Run har-server server `sudo har-server cnn.com.har -p 80 -h -r`
-... -p will set the listening port to 80.  You need to run as root to do this
-... -h add all domains in HAR to host file, and point them to 127.0.0.1
-... -r remove all domains which were added to host file, when SIGINT is caught (ctrl+c).
+ * -p will set the listening port to 80.  You need to run as root to do this
+ * -h add all domains in HAR to host file, and point them to 127.0.0.1
+ * -r remove all domains which were added to host file, when SIGINT is caught (ctrl+c).
 3. Open your browser, and open http://cnn.com
-... DNS cache might keep requests from cnn.com from coming form har-server
+ * DNS cache might keep requests from cnn.com from coming form har-server
 4. All responses will be a reply from cnn.har.
 
 ###Serving a resource
@@ -47,11 +47,11 @@ this setHostFileEntries is used and host file is not writable, then har-server w
 
 
 ####Future plans
-*Option to compare header values before when finding response in HAR file.
-*Option to have conditional query string values when finding response in HAR file.
-*SSL, create an SSL cert for har-server to use.  By default modern browsers will reject self-signed SSL serts on 3rd party
+* Option to compare header values before when finding response in HAR file.
+* Option to have conditional query string values when finding response in HAR file.
+* SSL, create an SSL cert for har-server to use.  By default modern browsers will reject self-signed SSL serts on 3rd party
 domains.  However, starting Chrome with the --ignore-certificate-errors will allow this.  Other browsers likely have similor
 flags.
-*Reverse proxy requests which are not in the HAR.  har-server would have to pre-fetch DNS records before modifying the host
+* Reverse proxy requests which are not in the HAR.  har-server would have to pre-fetch DNS records before modifying the host
 file.  When a request comes in, request from the IP address and set the host header.
-*HTTP2 support.
+* HTTP2 support.
