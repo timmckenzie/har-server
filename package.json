@@ -1,6 +1,6 @@
 {
   "name": "har-server",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Server resources from a HAR file",
   "main": "index.js",
   "scripts": {
