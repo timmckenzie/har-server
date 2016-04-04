@@ -122,3 +122,6 @@ $RECYCLE.BIN/
 
 junk*
 *har
+*.key
+*.crt
+*.cert
