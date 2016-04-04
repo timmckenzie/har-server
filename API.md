@@ -5,7 +5,6 @@
 
 * [HarServer](#HarServer)
     * [new HarServer()](#new_HarServer_new)
-    * [.run()](#HarServer+run) ⇒ <code>Promise.&lt;TResult&gt;</code>
     * [.readHar(harFileName)](#HarServer+readHar) ⇒ <code>Promise.&lt;TResult&gt;</code>
     * [.setHostFile()](#HarServer+setHostFile) ⇒ <code>Promise.&lt;TResult&gt;</code>
     * [.cleanHostFile()](#HarServer+cleanHostFile) ⇒ <code>Promise.&lt;TResult&gt;</code>
@@ -26,14 +25,11 @@ Har Server please let jsdoc find this
 | config.hostFileIp | <code>string</code> | IP address to match with DNS names in the host file |
 | config.removeHostFileEntries | <code>boolean</code> | allows cleanHostFile() to run |
 | config.listeningPort | <code>int</code> | the port which the server will listen on |
+| config.useSSL | <code>boolean</code> | Start the server using encryption |
+| config.generateKey | <code>boolean</code> | generate and use a SSL key and cert |
+| config.sslKeyFile | <code>string</code> | A file containing a SSL key |
+| config.sslCertFile | <code>string</code> | A file containing a SSL certificate |
 
-<a name="HarServer+run"></a>
-
-### harServer.run() ⇒ <code>Promise.&lt;TResult&gt;</code>
-Just run the harServer so it works.
-
-**Kind**: instance method of <code>[HarServer](#HarServer)</code>  
-**Returns**: <code>Promise.&lt;TResult&gt;</code> - Resolves when the server is running  
 <a name="HarServer+readHar"></a>
 
 ### harServer.readHar(harFileName) ⇒ <code>Promise.&lt;TResult&gt;</code>
@@ -71,6 +67,10 @@ Creates server.  Must be run after readHar
 | Param | Type | Description |
 | --- | --- | --- |
 | port | <code>int</code> | Sets the listening port |
+| config.useSSL | <code>boolean</code> | Start the server using encryption |
+| config.generateKey | <code>boolean</code> | generate and use a SSL key and cert |
+| config.sslKeyFile | <code>string</code> | A file containing a SSL key |
+| config.sslCertFile | <code>string</code> | A file containing a SSL certificate |
 
 <a name="HarServer+isRunning"></a>
 

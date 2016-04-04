@@ -76,7 +76,7 @@ describe('har server core', function () {
 
         }).then(done).catch(done);
     });
-
+    
     it('Should start server', function (done) {
         var config = _.clone(baseConfig);
         config.setHostFileEntries = true;
