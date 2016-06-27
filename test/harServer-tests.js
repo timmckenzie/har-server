@@ -10,12 +10,19 @@ Promise.promisifyAll(request);
 
 describe('har server core', function () {
     var baseConfig = {
-        hostFileIp: '127.0.0.1',
+        hostFileIp: '',
         listeningPort: 8080,
         setHostFileEntries: false,
         removeHostFileEntries: false,
         harFileName: './test/fixtures/test.har'
     };
+    var proxiedRequester;
+    before(function (done) {
+        proxiedRequester = Promise.promisifyAll(request.defaults({
+            proxy: 'http://localhost:8080/'
+        }));
+        done();
+    });
 
     it('should validate good HAR file', function (done) {
         var hs = harServer(baseConfig);
@@ -37,7 +44,8 @@ describe('har server core', function () {
         });
     });
 
-    it('Should update host file', function (done) {
+    //remove skip when running as root.
+    it.skip('Should update host file', function (done) {
         var config = _.clone(baseConfig);
         config.setHostFileEntries = true;
 
@@ -55,7 +63,8 @@ describe('har server core', function () {
         }).then(done).catch(done);
     });
 
-    it('Should update host file', function (done) {
+    //remote skip when running as root
+    it.skip('Should clean host file', function (done) {
         var config = _.clone(baseConfig);
         config.setHostFileEntries = true;
         config.removeHostFileEntries = true;
@@ -85,24 +94,18 @@ describe('har server core', function () {
         var hs = harServer(config);
 
         hs.readHar().then(function () {
-            return hs.setHostFile();
-
-        }).then(function () {
             return hs.start();
 
         }).then(function () {
-            return request.getAsync('http://www.firstparty.com:8080/junk.html');
+            return proxiedRequester.getAsync('http://www.firstparty.com:8080/junk.html');
 
         }).then(function (res) {
             res.statusCode.should.equal(200);
 
-            return request.getAsync('http://www.firstparty.com:8080/non-existing.html');
+            return proxiedRequester.getAsync('http://www.firstparty.com:8080/non-existing.html');
 
         }).then(function (res) {
             res.statusCode.should.equal(404);
-
-            return hs.cleanHostFile();
-        }).then(function () {
             done();
 
         }).catch(function (err) {
