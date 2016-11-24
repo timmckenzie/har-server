@@ -1,5 +1,8 @@
 #HAR Server
-#####Serve files from a HAR file.
+
+[![Build Status](https://travis-ci.org/timmckenzie/har-server.svg?branch=master)](https://travis-ci.org/timmckenzie/har-server)
+
+####Serve files from a HAR file.
 har-server takes a HAR file as an input, and creates a HTTP server which will replay responses from the HAR file.
 
 ###Install Command
