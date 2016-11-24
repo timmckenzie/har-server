@@ -85,3 +85,4 @@ Name of file containing SSL cert to use.  Must also have sslKeyFile set.  No def
 file.  When a request comes in, request from the IP address and set the host header.
 * HTTP2 support.
 * Add option to use http proxy instead of editing host file, to redirect requests to har-server.  This would also deal with IP based requests.
+* Option to not match on port
