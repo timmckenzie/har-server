@@ -6,6 +6,8 @@ var should = require('should');
 var request = require('request');
 var har = require('har');
 var harUtil = require('./harUtil');
+var http = require('http');
+
 
 Promise.promisifyAll(fs);
 Promise.promisifyAll(request);
@@ -156,12 +158,8 @@ describe('har server core', function () {
 
         }).then(function (res) {
             res.statusCode.should.equal(404);
-            done();
 
-        }).catch(function (err) {
-            done(err);
-
-        });
+        }).then(done).catch(done);
     });
 
     it('Should start HTTPS server', function (done) {
@@ -203,6 +201,109 @@ describe('har server core', function () {
                 strictSSL: false,
                 url: 'https://localhost:8080/404Page.html'
             });
+        }).then(function (res) {
+            res.statusCode.should.equal(404);
+
+        }).then(done).catch(done);
+    });
+
+    it('Should match on request body', function (done) {
+        var config = _.clone(baseConfig);
+        config.setHostFileEntries = true;
+        config.removeHostFileEntries = true;
+
+        var url = 'http://localhost:8080/page.html';
+        var urlPost = 'http://localhost:8080/pagePost.html';
+        var urlPut = 'http://localhost:8080/pagePut.html';
+        var response = 'Everything is cool';
+        var goodBody = 'Cool post bro';
+
+
+        var harFile = harUtil.createHar(url, 200, response);
+        harFile.addEntry(
+            new har.Entry({
+                startedDateTime: new Date(),
+                request: new har.Request({
+                    url: urlPost,
+                    method: 'POST',
+                    headers: [],
+                    postData: new har.PostData({
+                        mimeType: 'text/plain',
+                        text: goodBody
+                    })
+                }),
+                response: new har.Response({
+                    status: 200,
+                    statusText: http.STATUS_CODES[200],
+                    headers: [],
+                    content: new har.PostData({
+                        text: response + 'POST'
+                    })
+                })
+            })
+        );
+
+        harFile.addEntry(
+            new har.Entry({
+                startedDateTime: new Date(),
+                request: new har.Request({
+                    url: urlPut,
+                    method: 'PUT',
+                    headers: [],
+                    postData: new har.PostData({
+                        mimeType: 'text/plain',
+                        text: goodBody
+                    })
+                }),
+                response: new har.Response({
+                    status: 200,
+                    statusText: http.STATUS_CODES[200],
+                    headers: [],
+                    content: new har.PostData({
+                        text: response + 'PUT'
+                    })
+                })
+            })
+        );
+
+        harUtil.saveHar(harFile).then(function (file) {
+            config.harFileName = file;
+            hs = harServer(config);
+            return hs.readHar();
+
+        }).then(function () {
+            return hs.start();
+
+        }).then(function () {
+            return request.postAsync({
+                url: urlPost,
+                body: goodBody
+            });
+
+        }).then(function (res) {
+            res.statusCode.should.equal(200);
+
+        }).then(function () {
+            return request.putAsync({
+                url: urlPut,
+                body: goodBody
+            });
+
+        }).then(function (res) {
+            res.statusCode.should.equal(200);
+
+            return request.postAsync(urlPost, 'Bad Body');
+
+        }).then(function (res) {
+            res.statusCode.should.equal(404);
+
+            return request.putAsync(urlPut, 'Bad Body');
+
+        }).then(function (res) {
+            res.statusCode.should.equal(404);
+
+            return request.putAsync(urlPost, goodBody);
+
         }).then(function (res) {
             res.statusCode.should.equal(404);
 
