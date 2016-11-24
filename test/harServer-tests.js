@@ -4,9 +4,13 @@ var fs = require('fs');
 var Promise = require('bluebird');
 var should = require('should');
 var request = require('request');
+var har = require('har');
+var harUtil = require('./harUtil');
 
 Promise.promisifyAll(fs);
 Promise.promisifyAll(request);
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 describe('har server core', function () {
     var baseConfig = {
@@ -17,11 +21,29 @@ describe('har server core', function () {
         harFileName: './test/fixtures/test.har'
     };
     var proxiedRequester;
+    var hs;
+
     before(function (done) {
         proxiedRequester = Promise.promisifyAll(request.defaults({
             proxy: 'http://localhost:8080/'
         }));
+
         done();
+    });
+
+    afterEach(function (done) {
+        var tmpFiles = [];
+        Promise.resolve().then(function () {
+            if (hs && hs.isRunning()) {
+                return hs.stop();
+            }
+        }).then(done).catch(done);
+    });
+
+    after(function (done) {
+        harUtil.cleanTempDirectory().then(function () {
+            done();
+        }).catch(done);
     });
 
     it('should validate good HAR file', function (done) {
@@ -85,24 +107,52 @@ describe('har server core', function () {
 
         }).then(done).catch(done);
     });
-    
-    it('Should start server', function (done) {
+
+    it('isRunning reports correctly', function (done) {
         var config = _.clone(baseConfig);
         config.setHostFileEntries = true;
         config.removeHostFileEntries = true;
 
-        var hs = harServer(config);
+        hs = harServer(config);
+        hs.isRunning().should.be.false();
 
         hs.readHar().then(function () {
             return hs.start();
 
         }).then(function () {
-            return proxiedRequester.getAsync('http://www.firstparty.com:8080/junk.html');
+            hs.isRunning().should.be.true();
+
+            return hs.stop();
+
+        }).then(function () {
+            hs.isRunning().should.be.false();
+
+        }).then(done).catch(done);
+    });
+
+    it('Should start server', function (done) {
+        var config = _.clone(baseConfig);
+        config.setHostFileEntries = true;
+        config.removeHostFileEntries = true;
+
+        var url = 'http://localhost:8080/page.html';
+        var response = 'Everything is cool';
+        var har = harUtil.createHar(url, 200, response);
+
+        harUtil.saveHar(har).then(function (file) {
+            config.harFileName = file;
+            hs = harServer(config);
+            return hs.readHar();
+        }).then(function () {
+            return hs.start();
+
+        }).then(function () {
+            return proxiedRequester.getAsync(url);
 
         }).then(function (res) {
             res.statusCode.should.equal(200);
 
-            return proxiedRequester.getAsync('http://www.firstparty.com:8080/non-existing.html');
+            return proxiedRequester.getAsync('http://localhost:8080/non-existing.html');
 
         }).then(function (res) {
             res.statusCode.should.equal(404);
@@ -112,5 +162,50 @@ describe('har server core', function () {
             done(err);
 
         });
+    });
+
+    it('Should start HTTPS server', function (done) {
+        var config = _.clone(baseConfig);
+        config.setHostFileEntries = true;
+        config.removeHostFileEntries = true;
+        config.useSSL = true;
+        config.generateKey = true;
+        config.listeningSslPort = 8080;
+
+        var url = 'https://localhost:8080/page.html';
+        var response = 'Everything is cool';
+        var har = harUtil.createHar(url, 200, response);
+
+        harUtil.saveHar(har).then(function (file) {
+            config.harFileName = file;
+            hs = harServer(config);
+            return hs.readHar();
+
+        }).then(function () {
+            return hs.start();
+
+        }).then(function () {
+            return request.getAsync({
+                agentOptions: {
+                    rejectUnauthorized: false
+                },
+                strictSSL: false,
+                url: url
+            });
+
+        }).then(function (res) {
+            res.statusCode.should.equal(200);
+
+            return request.getAsync({
+                agentOptions: {
+                    rejectUnauthorized: false
+                },
+                strictSSL: false,
+                url: 'https://localhost:8080/404Page.html'
+            });
+        }).then(function (res) {
+            res.statusCode.should.equal(404);
+
+        }).then(done).catch(done);
     });
 });
