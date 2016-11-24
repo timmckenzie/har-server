@@ -5,11 +5,12 @@ var HAR = require('har');
 var http = require('http');
 var Promise = require('bluebird');
 var package = require('../package.json');
+var _ = require('lodash');
 
 Promise.promisifyAll(fs);
 const TempDir = './test/tmp';
 
-tmp.setGracefulCleanup()
+tmp.setGracefulCleanup();
 
 module.exports = {
     saveHar: function saveHar(har) {
@@ -61,7 +62,9 @@ module.exports = {
         return fs.readdirAsync(absoluteTempDir).then(function (fileNames) {
             var deletePromises = [];
             for (var i = 0; i < fileNames.length; i++) {
-                deletePromises.push(fs.unlinkAsync(absoluteTempDir + pathLib.sep + fileNames[i]));
+                if (_.startsWith(fileNames[i], 'tmp')) {
+                    deletePromises.push(fs.unlinkAsync(absoluteTempDir + pathLib.sep + fileNames[i]));
+                }
             }
             return Promise.all(deletePromises);
         });
