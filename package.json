@@ -18,7 +18,7 @@
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.3.4",
-    "har-validator": "^2.1.1",
+    "har-validator": "^3.3.0",
     "hostile": "^1.0.2",
     "is-root": "^1.0.0",
     "lodash": "^4.6.1",
