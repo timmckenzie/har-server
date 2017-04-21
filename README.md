@@ -1,16 +1,16 @@
-#HAR Server
+# HAR Server
 
 [![Build Status](https://travis-ci.org/timmckenzie/har-server.svg?branch=master)](https://travis-ci.org/timmckenzie/har-server)
 
-####Serve files from a HAR file.
+#### Serve files from a HAR file.
 har-server takes a HAR file as an input, and creates a HTTP server which will replay responses from the HAR file.
 
-###Install Command
+### Install Command
 ```bash
 npm install -g har-server
 ```
 
-###How does it work?
+### How does it work?
 1. Capture a HAR file with full response bodies.  Lets use http://cnn.com, and save HAR as cnn.com.har
 2. Run har-server `sudo har-server cnn.com.har -p 80 -h -r`
  * -p will set the listening port to 80.  You need to run as root to do this
@@ -20,7 +20,7 @@ npm install -g har-server
  * DNS cache might keep requests from cnn.com from coming form har-server
 4. All responses will be a reply from cnn.har.
 
-###Serving a resource
+### Serving a resource
 A request for a resource is considered to be a match of a HAR file entry if and only if:
 * the HAR host matches the requests host header
 * the HAR path, query string, and fragment exactly matches the request path, query string, and fragment
@@ -28,7 +28,7 @@ A request for a resource is considered to be a match of a HAR file entry if and 
 * the request body, and HAR request body match
 If the HAR file contains multiple matches for a specific request the first match is used in the response.
 
-###Serving a HTTPS har
+### Serving a HTTPS har
 har-server can generate its own SSL key and certificate, or use pre-existing ones.  However, loading the har file in a browser
 causes all sorts of SSL errors.  har-server uses one key-cert pair for every domain, which causes all browsers display
 a warning on the page's domain, and reject all 3rd party resources.  This is good for security but bad for serving HAR files.
@@ -45,44 +45,44 @@ Chrome has a command line switch to disable this check.  Here are some common in
 C:\Users\%USERNAME%\AppData\Local\Google\Chrome\Application\chrome.exe --ignore-certificate-errors
 ```
 
-###Running har-server
+### Running har-server
 ```bash
 har-server [OPTIONS] <file.har>
 ```
 
-####Options
-#####--hostFileIp
+#### Options
+##### --hostFileIp
 The IP address to associate with DNS name in the host file.  Default 127.0.0.1
 
-#####--listeningPort, -p
+##### --listeningPort, -p
 The port which har-server will listen on.  If below 1024 har-server must be run as root.  Default 8080
 
-#####--setHostFileEntries, -h
+##### --setHostFileEntries, -h
 Add host entries to host file.  Host file location on Linux and OSX is assumed to be /etc/hosts, on Windows C:/Windows/System32/drivers/etc/hosts.
 If this setHostFileEntries is used and host file is not writable, then har-server will not run.  Default false
 
-#####--removeHostFileEntries, -r
+##### --removeHostFileEntries, -r
 When har-server receives SIGINT (ctrl+c) remove host file entries in HAR file.  Must be used with setHostFileEntries.
 Host file location on Linux and OSX is assumed to be /etc/hosts, on Windows C:/Windows/System32/drivers/etc/hosts. If
 this setHostFileEntries is used and host file is not writable, then har-server will not run.  Default false
 
-#####--useSSL, -s
+##### --useSSL, -s
 Enable HTTPS server.  Default false
 
-#####--listeningSslPort
+##### --listeningSslPort
 The port to listen for HTTPS requests on.  Default 4433
 
-#####--generateKey, -g
+##### --generateKey, -g
 Generate one time use SSL cert and key.  This switch is ignored if sslKeyFile or sslCertFile are set.  Default true
 
-#####--sslKeyFile, -k
+##### --sslKeyFile, -k
 Name of file containing SSL key to use.  Must also have sslCertFile set.  No default
 
-#####--sslCertFile, -c
+##### --sslCertFile, -c
 Name of file containing SSL cert to use.  Must also have sslKeyFile set.  No default
 
 
-###Future plans
+### Future plans
 * Option to compare header values before when finding response in HAR file.
 * Option to have conditional query string values when finding response in HAR file.
 * Reverse proxy requests which are not in the HAR.  har-server would have to pre-fetch DNS records before modifying the host
